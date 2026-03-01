@@ -6,8 +6,9 @@ namespace ToDoMaui_Listview;
 public class ToDoClass : INotifyPropertyChanged
 {
     private int _id;
-    private string _title;
-    private string _detail;
+    private string _title = "";
+    private string _detail = "";
+    private DateTime? _dateTime; // optional
 
     public int id
     {
@@ -25,6 +26,29 @@ public class ToDoClass : INotifyPropertyChanged
     {
         get => _detail;
         set { _detail = value; OnPropertyChanged(); }
+    }
+
+    // Optional datetime (nullable)
+    public DateTime? dateTime
+    {
+        get => _dateTime;
+        set
+        {
+            _dateTime = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DisplayDateTime));
+        }
+    }
+
+    // What we show in the ListView
+    public string DisplayDateTime
+    {
+        get
+        {
+            if (dateTime == null) return "";
+            // Day of week included
+            return dateTime.Value.ToString("dddd, MMM dd yyyy - hh:mm tt");
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

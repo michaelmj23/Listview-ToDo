@@ -5,76 +5,111 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="To-Do List">
 
-    <VerticalStackLayout Spacing="10" Padding="12">
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="12">
 
-        <!-- Input Card -->
-        <Frame Padding="12" CornerRadius="12" HasShadow="True">
-            <VerticalStackLayout Spacing="10">
+            <!-- INPUT AREA -->
+            <Frame Padding="12" CornerRadius="12" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-                <Label Text="Create / Edit To-Do" FontAttributes="Bold" FontSize="18" />
+                    <Label Text="Create / Edit To-Do"
+                           FontAttributes="Bold"
+                           FontSize="18" />
 
-                <Entry x:Name="titleEntry"
-                       Placeholder="Title"
-                       MaxLength="50"
-                       ReturnType="Next"/>
+                    <Entry x:Name="titleEntry"
+                           Placeholder="Title"
+                           MaxLength="50" />
 
-                <Editor x:Name="detailsEditor"
-                        Placeholder="Details"
-                        MaxLength="240"
-                        HeightRequest="90" />
+                    <Editor x:Name="detailsEditor"
+                            Placeholder="Details"
+                            MaxLength="240"
+                            HeightRequest="90" />
 
-                <HorizontalStackLayout Spacing="10">
+                    <!-- Optional Date & Time -->
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="dateCheckBox" />
+                        <Label Text="Include Date &amp; Time (Optional)"
+                               VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
 
-                    <Button x:Name="addBtn"
-                            Text="Add"
-                            Clicked="AddToDoItem"
-                            HorizontalOptions="FillAndExpand"/>
+                    <DatePicker x:Name="datePicker"
+                                IsVisible="False" />
 
-                    <Button x:Name="editBtn"
-                            Text="Save Edit"
-                            IsVisible="False"
-                            Clicked="EditToDoItem"
-                            HorizontalOptions="FillAndExpand"/>
+                    <TimePicker x:Name="timePicker"
+                                IsVisible="False" />
 
-                    <Button x:Name="cancelBtn"
-                            Text="Cancel"
-                            IsVisible="False"
-                            Clicked="CancelEdit"
-                            HorizontalOptions="FillAndExpand"/>
-                </HorizontalStackLayout>
+                    <!-- Buttons -->
+                    <HorizontalStackLayout Spacing="10">
 
-            </VerticalStackLayout>
-        </Frame>
+                        <Button x:Name="addBtn"
+                                Text="Add"
+                                Clicked="AddToDoItem"
+                                HorizontalOptions="FillAndExpand" />
 
-        <!-- List -->
-        <ListView x:Name="todoLV"
-                  VerticalOptions="FillAndExpand"
-                  ItemSelected="TodoLV_OnItemSelected"
-                  SeparatorVisibility="Default">
+                        <Button x:Name="editBtn"
+                                Text="Save Edit"
+                                IsVisible="False"
+                                Clicked="EditToDoItem"
+                                HorizontalOptions="FillAndExpand" />
 
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Grid Padding="10" ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                        <Button x:Name="cancelBtn"
+                                Text="Cancel"
+                                IsVisible="False"
+                                Clicked="CancelEdit"
+                                HorizontalOptions="FillAndExpand" />
+                    </HorizontalStackLayout>
 
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="{Binding title}" FontAttributes="Bold" FontSize="16" LineBreakMode="TailTruncation"/>
-                                <Label Text="{Binding detail}" FontSize="13" LineBreakMode="TailTruncation"/>
-                            </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
 
-                            <Button Grid.Column="1"
-                                    Text="Delete"
-                                    ClassId="{Binding id}"
-                                    Clicked="DeleteToDoItem" />
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            <!-- LIST AREA -->
+            <Label Text="Your To-Dos"
+                   FontAttributes="Bold"
+                   FontSize="16" />
 
-    </VerticalStackLayout>
+            <ListView x:Name="todoLV"
+                      HasUnevenRows="True"
+                      SeparatorVisibility="Default"
+                      ItemSelected="TodoLV_OnItemSelected"
+                      VerticalOptions="FillAndExpand">
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="10" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Left content -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding title}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"
+                                           LineBreakMode="TailTruncation" />
+
+                                    <Label Text="{Binding detail}"
+                                           FontSize="13"
+                                           LineBreakMode="TailTruncation" />
+
+                                    <Label Text="{Binding DisplayDateTime}"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+
+                                <!-- Right delete button -->
+                                <Button Grid.Column="1"
+                                        Text="Delete"
+                                        ClassId="{Binding id}"
+                                        Clicked="DeleteToDoItem" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

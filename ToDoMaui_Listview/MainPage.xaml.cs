@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ToDoMaui_Listview;
 
 public partial class MainPage : ContentPage
 {
-    private ObservableCollection<ToDoClass> _todos = new();
+    private readonly ObservableCollection<ToDoClass> _todos = new();
     private ToDoClass? _selectedToDo = null;
     private int _nextId = 1;
 
@@ -15,9 +16,23 @@ public partial class MainPage : ContentPage
         // Bind ListView to ObservableCollection
         todoLV.ItemsSource = _todos;
 
-        // Optional sample items (you can remove these later)
-        _todos.Add(new ToDoClass { id = _nextId++, title = "Example: Study", detail = "Read notes for quiz" });
-        _todos.Add(new ToDoClass { id = _nextId++, title = "Example: Grocery", detail = "Milk, eggs, bread" });
+        // Checkbox toggles visibility of Date/Time pickers
+        dateCheckBox.CheckedChanged += DateCheckBox_CheckedChanged;
+
+        // Optional sample item
+        _todos.Add(new ToDoClass
+        {
+            id = _nextId++,
+            title = "Example",
+            detail = "Tap me to edit. Delete removes me.",
+            dateTime = null
+        });
+    }
+
+    private void DateCheckBox_CheckedChanged(object? sender, CheckedChangedEventArgs e)
+    {
+        datePicker.IsVisible = e.Value;
+        timePicker.IsVisible = e.Value;
     }
 
     private void AddToDoItem(object sender, EventArgs e)
@@ -31,14 +46,22 @@ public partial class MainPage : ContentPage
             return;
         }
 
+        DateTime? selectedDateTime = null;
+        if (dateCheckBox.IsChecked)
+        {
+            selectedDateTime = datePicker.Date + timePicker.Time;
+        }
+
         var todo = new ToDoClass
         {
             id = _nextId++,
             title = title,
-            detail = detail
+            detail = detail,
+            dateTime = selectedDateTime
         };
 
         _todos.Insert(0, todo);
+
         ClearInputs();
     }
 
@@ -48,9 +71,23 @@ public partial class MainPage : ContentPage
 
         _selectedToDo = (ToDoClass)e.SelectedItem;
 
+        // Fill inputs
         titleEntry.Text = _selectedToDo.title;
         detailsEditor.Text = _selectedToDo.detail;
 
+        // Load optional datetime
+        if (_selectedToDo.dateTime != null)
+        {
+            dateCheckBox.IsChecked = true;
+            datePicker.Date = _selectedToDo.dateTime.Value.Date;
+            timePicker.Time = _selectedToDo.dateTime.Value.TimeOfDay;
+        }
+        else
+        {
+            dateCheckBox.IsChecked = false;
+        }
+
+        // Switch buttons to Edit mode
         addBtn.IsVisible = false;
         editBtn.IsVisible = true;
         cancelBtn.IsVisible = true;
@@ -60,7 +97,7 @@ public partial class MainPage : ContentPage
     {
         if (_selectedToDo == null)
         {
-            DisplayAlert("No selection", "Tap an item first to edit.", "OK");
+            DisplayAlert("No item selected", "Tap an item to edit first.", "OK");
             return;
         }
 
@@ -73,15 +110,14 @@ public partial class MainPage : ContentPage
             return;
         }
 
-        // Updates ListView automatically because ToDoClass supports INotifyPropertyChanged
         _selectedToDo.title = title;
         _selectedToDo.detail = detail;
 
-        EndEditMode();
-    }
+        if (dateCheckBox.IsChecked)
+            _selectedToDo.dateTime = datePicker.Date + timePicker.Time;
+        else
+            _selectedToDo.dateTime = null;
 
-    private void CancelEdit(object sender, EventArgs e)
-    {
         EndEditMode();
     }
 
@@ -97,10 +133,18 @@ public partial class MainPage : ContentPage
         bool confirm = await DisplayAlert("Delete", $"Delete \"{item.title}\"?", "Yes", "No");
         if (!confirm) return;
 
+        // If deleting the one being edited, exit edit mode
         if (_selectedToDo != null && _selectedToDo.id == item.id)
+        {
             EndEditMode();
+        }
 
         _todos.Remove(item);
+    }
+
+    private void CancelEdit(object sender, EventArgs e)
+    {
+        EndEditMode();
     }
 
     private void EndEditMode()
@@ -119,6 +163,7 @@ public partial class MainPage : ContentPage
     {
         titleEntry.Text = "";
         detailsEditor.Text = "";
+        dateCheckBox.IsChecked = false;
         titleEntry.Focus();
     }
 }
