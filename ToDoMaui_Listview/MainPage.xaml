@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="ToDoMaui_Listview.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="To-Do List">
+
+    <VerticalStackLayout Spacing="10" Padding="12">
+
+        <!-- Input Card -->
+        <Frame Padding="12" CornerRadius="12" HasShadow="True">
+            <VerticalStackLayout Spacing="10">
+
+                <Label Text="Create / Edit To-Do" FontAttributes="Bold" FontSize="18" />
+
+                <Entry x:Name="titleEntry"
+                       Placeholder="Title"
+                       MaxLength="50"
+                       ReturnType="Next"/>
+
+                <Editor x:Name="detailsEditor"
+                        Placeholder="Details"
+                        MaxLength="240"
+                        HeightRequest="90" />
+
+                <HorizontalStackLayout Spacing="10">
+
+                    <Button x:Name="addBtn"
+                            Text="Add"
+                            Clicked="AddToDoItem"
+                            HorizontalOptions="FillAndExpand"/>
+
+                    <Button x:Name="editBtn"
+                            Text="Save Edit"
+                            IsVisible="False"
+                            Clicked="EditToDoItem"
+                            HorizontalOptions="FillAndExpand"/>
+
+                    <Button x:Name="cancelBtn"
+                            Text="Cancel"
+                            IsVisible="False"
+                            Clicked="CancelEdit"
+                            HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- List -->
+        <ListView x:Name="todoLV"
+                  VerticalOptions="FillAndExpand"
+                  ItemSelected="TodoLV_OnItemSelected"
+                  SeparatorVisibility="Default">
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="10" ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding title}" FontAttributes="Bold" FontSize="16" LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding detail}" FontSize="13" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="1"
+                                    Text="Delete"
+                                    ClassId="{Binding id}"
+                                    Clicked="DeleteToDoItem" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </VerticalStackLayout>
+</ContentPage>
